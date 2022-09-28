@@ -14,6 +14,6 @@ kernel
 kernelmemfs
 mkfs
 .gdbinit
-test_*.c
+src/test_*.c
 Makefile.test
 tests-out/

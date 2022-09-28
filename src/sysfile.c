@@ -450,6 +450,7 @@ sys_pipe(void)
   return 0;
 }
 
+/* Author: Tung and Duc" */
 int
 sys_getreadcount(void) {
   int readcountcopy; 
