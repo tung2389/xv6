@@ -89,3 +89,20 @@ sys_uptime(void)
   release(&tickslock);
   return xticks;
 }
+
+int
+sys_settickets(void) {
+  /*
+  edge cases:
+    - No parameter
+    - number of tickets <= 0
+  */  
+  int new_tickets;
+  if (argint(0, &new_tickets) < 0) {
+    return -1;
+  }
+  if (new_tickets <= 0) {
+    return -1;
+  }
+  return settickets(new_tickets);
+}

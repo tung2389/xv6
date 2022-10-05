@@ -10,6 +10,7 @@
 struct {
   struct spinlock lock;
   struct proc proc[NPROC];
+  uint total_tickets; // Added by Tung
 } ptable;
 
 static struct proc *initproc;
@@ -138,6 +139,7 @@ userinit(void)
   p->tf->eflags = FL_IF;
   p->tf->esp = PGSIZE;
   p->tf->eip = 0;  // beginning of initcode.S
+  p->tickets = 1;  // by default, each process get one ticket - added by Tung.
 
   safestrcpy(p->name, "initcode", sizeof(p->name));
   p->cwd = namei("/");
@@ -199,6 +201,8 @@ fork(void)
   np->sz = curproc->sz;
   np->parent = curproc;
   *np->tf = *curproc->tf;
+  // Child process inherits number of tickets from parent - add by Tung
+  np->tickets = curproc->tickets;
 
   // Clear %eax so that fork returns 0 in the child.
   np->tf->eax = 0;
@@ -531,4 +535,27 @@ procdump(void)
     }
     cprintf("\n");
   }
+}
+
+/*
+Set the number of tickets for the current process
+Added by Tung 
+*/
+int settickets(int number) {
+  /*
+  Edge cases:
+  - number <= 0
+  */
+  if (number <= 0) {
+    return -1;
+  }
+  struct proc *cur_proc = myproc();
+  uint old_tickets = cur_proc->tickets;
+  cur_proc->tickets = number;
+
+  acquire(&ptable.lock);
+  ptable.total_tickets -= old_tickets;
+  ptable.total_tickets += number;
+  release(&ptable.lock);
+  return 0;
 }
