@@ -17,3 +17,4 @@ mkfs
 src/test_*.c
 Makefile.test
 tests-out/
+tests/

@@ -6,6 +6,7 @@
 #include "x86.h"
 #include "proc.h"
 #include "spinlock.h"
+#include "pstat.h"
 
 struct {
   struct spinlock lock;
@@ -556,6 +557,37 @@ int settickets(int number) {
   acquire(&ptable.lock);
   ptable.total_tickets -= old_tickets;
   ptable.total_tickets += number;
+  release(&ptable.lock);
+  return 0;
+}
+
+/*
+Get some information about all running processes
+Added by Tung 
+*/
+int getpinfo(struct pstat *ps) {
+  /*
+  Edge cases:
+    - ps is NULL
+  */
+  if (ps == NULL) {
+    return -1;
+  }
+
+  acquire(&ptable.lock);
+  for (int i = 0; i < NPROC; i++) {
+    struct proc p = ptable.proc[i];
+    if (p.state == UNUSED) {
+      ps->inuse[i] = 0;
+    }
+    else {
+      ps->inuse[i] = 1;
+    }
+
+    ps->tickets[i] = p.tickets;
+    ps->pid[i] = p.pid;
+    ps->ticks[i] = p.ticks;
+  }
   release(&ptable.lock);
   return 0;
 }

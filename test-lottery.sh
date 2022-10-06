@@ -8,7 +8,5 @@ if ! [[ -d src ]]; then
 fi
 rm -r tests;
 mkdir tests;
-cp -r test/getreadcount/* tests;
+cp -r test/lottery/* tests;
 ./tester/run-tests.sh $*;
-rm -r tests;
-
