@@ -24,6 +24,8 @@ proc.h
 proc.c
 swtch.S
 kalloc.c
+rand.h
+rand.c
 
 # system calls
 traps.h

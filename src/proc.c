@@ -7,6 +7,7 @@
 #include "proc.h"
 #include "spinlock.h"
 #include "pstat.h"
+#include "rand.h"
 
 struct {
   struct spinlock lock;
@@ -26,6 +27,7 @@ void
 pinit(void)
 {
   initlock(&ptable.lock, "ptable");
+  ptable.total_tickets = 0;
 }
 
 // Must be called with interrupts disabled
@@ -141,7 +143,10 @@ userinit(void)
   p->tf->esp = PGSIZE;
   p->tf->eip = 0;  // beginning of initcode.S
   p->tickets = 1;  // by default, each process get one ticket - added by Tung.
-
+  acquire(&ptable.lock);
+  ptable.total_tickets += 1; 
+  release(&ptable.lock);
+  
   safestrcpy(p->name, "initcode", sizeof(p->name));
   p->cwd = namei("/");
 
@@ -204,6 +209,10 @@ fork(void)
   *np->tf = *curproc->tf;
   // Child process inherits number of tickets from parent - add by Tung
   np->tickets = curproc->tickets;
+  acquire(&ptable.lock);
+  ptable.total_tickets += curproc->tickets;
+  release(&ptable.lock);
+  
 
   // Clear %eax so that fork returns 0 in the child.
   np->tf->eax = 0;
@@ -335,15 +344,22 @@ scheduler(void)
     // Enable interrupts on this processor.
     sti();
 
-    // Loop over process table looking for process to run.
     acquire(&ptable.lock);
+    long winner = rand() % ptable.total_tickets;
+    long counter = 0;
+    // Loop over process table looking for process to run.
     for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
       if(p->state != RUNNABLE)
+        continue;
+
+      counter += p->tickets;
+      if (counter <= winner) 
         continue;
 
       // Switch to chosen process.  It is the process's job
       // to release ptable.lock and then reacquire it
       // before jumping back to us.
+      uint ticks0 = ticks;
       c->proc = p;
       switchuvm(p);
       p->state = RUNNING;
@@ -354,6 +370,7 @@ scheduler(void)
       // Process is done running for now.
       // It should have changed its p->state before coming back.
       c->proc = 0;
+      p->ticks += (ticks - ticks0);
     }
     release(&ptable.lock);
 
