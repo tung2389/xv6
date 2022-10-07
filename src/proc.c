@@ -345,7 +345,7 @@ scheduler(void)
     sti();
 
     acquire(&ptable.lock);
-    long winner = rand() % ptable.total_tickets;
+    long winner = randint(ptable.total_tickets - 1);
     long counter = 0;
     // Loop over process table looking for process to run.
     for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){

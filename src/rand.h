@@ -1,2 +1,3 @@
-long int rand();
+long rand();
 void srand();
+long randint();
