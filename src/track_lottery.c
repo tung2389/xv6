@@ -1,3 +1,7 @@
+/*
+This is an user program to test the correctness of lottery scheduler.
+Author: Tung Luu.
+*/
 #include "types.h"
 #include "stat.h"
 #include "user.h"
