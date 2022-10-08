@@ -10,7 +10,6 @@ def main():
     plt.plot(list(range(0, 100)), data['30'].tolist(), label = '30 tickets')
     plt.xlabel('Time')
     plt.ylabel('Ticks')
-    plt.yticks(np.arange(0, 27, step = 1.5), np.arange(0, 27, step = 1.5))
     plt.legend()
     plt.show()
 
