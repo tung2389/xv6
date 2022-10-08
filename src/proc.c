@@ -309,6 +309,9 @@ wait(void)
         p->name[0] = 0;
         p->killed = 0;
         p->state = UNUSED;
+        p->ticks = 0;
+        ptable.total_tickets -= p->tickets;
+        p->tickets = 0;
         release(&ptable.lock);
         return pid;
       }
@@ -344,10 +347,12 @@ scheduler(void)
     // Enable interrupts on this processor.
     sti();
 
+    /* Implementation of lottery scheduler by Tung */
     acquire(&ptable.lock);
     long winner = randint(ptable.total_tickets - 1);
     long counter = 0;
-    // Loop over process table looking for process to run.
+    
+    // Find correct process to run
     for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
       if(p->state != RUNNABLE)
         continue;
@@ -359,21 +364,23 @@ scheduler(void)
       // Switch to chosen process.  It is the process's job
       // to release ptable.lock and then reacquire it
       // before jumping back to us.
-      uint ticks0 = ticks;
       c->proc = p;
       switchuvm(p);
       p->state = RUNNING;
 
+      uint ticks0 = ticks;
       swtch(&(c->scheduler), p->context);
+      p->ticks += (ticks - ticks0);
+
       switchkvm();
 
       // Process is done running for now.
       // It should have changed its p->state before coming back.
       c->proc = 0;
-      p->ticks += (ticks - ticks0);
+      break;
     }
     release(&ptable.lock);
-
+    /* End of lottery scheduler implementation by Tung */
   }
 }
 
