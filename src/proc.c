@@ -12,7 +12,7 @@
 struct {
   struct spinlock lock;
   struct proc proc[NPROC];
-  uint total_tickets; // Added by Tung
+  uint total_tickets; // the total tickets of RUNNABLE!!! processes - Added by Tung
 } ptable;
 
 static struct proc *initproc;
@@ -142,7 +142,8 @@ userinit(void)
   p->tf->eflags = FL_IF;
   p->tf->esp = PGSIZE;
   p->tf->eip = 0;  // beginning of initcode.S
-  p->tickets = 1;  // by default, each process get one ticket - added by Tung.
+  /* Initialize tickete and total ticket. by default, each process get one ticket - added by Tung */
+  p->tickets = 1;  
   acquire(&ptable.lock);
   ptable.total_tickets += 1; 
   release(&ptable.lock);
@@ -209,9 +210,6 @@ fork(void)
   *np->tf = *curproc->tf;
   // Child process inherits number of tickets from parent - add by Tung
   np->tickets = curproc->tickets;
-  acquire(&ptable.lock);
-  ptable.total_tickets += curproc->tickets;
-  release(&ptable.lock);
   
 
   // Clear %eax so that fork returns 0 in the child.
@@ -229,6 +227,7 @@ fork(void)
   acquire(&ptable.lock);
 
   np->state = RUNNABLE;
+  ptable.total_tickets += np->tickets;
 
   release(&ptable.lock);
 
@@ -275,6 +274,9 @@ exit(void)
     }
   }
 
+  if (curproc->state == RUNNABLE) {
+    ptable.total_tickets -= curproc->tickets;
+  }
   // Jump into the scheduler, never to return.
   curproc->state = ZOMBIE;
   sched();
@@ -310,8 +312,11 @@ wait(void)
         p->killed = 0;
         p->state = UNUSED;
         p->ticks = 0;
-        ptable.total_tickets -= p->tickets;
         p->tickets = 0;
+        /* 
+        No need to subtract total_tickets here because we have already done that 
+        when the process transits into ZOMBIE state
+        */
         release(&ptable.lock);
         return pid;
       }
@@ -367,6 +372,7 @@ scheduler(void)
       c->proc = p;
       switchuvm(p);
       p->state = RUNNING;
+      ptable.total_tickets -= p->tickets;
 
       uint ticks0 = ticks;
       swtch(&(c->scheduler), p->context);
@@ -415,7 +421,11 @@ void
 yield(void)
 {
   acquire(&ptable.lock);  //DOC: yieldlock
-  myproc()->state = RUNNABLE;
+  struct proc *p = myproc();
+  if (p->state != RUNNABLE) {
+    ptable.total_tickets += p->tickets;
+  }
+  p->state = RUNNABLE;
   sched();
   release(&ptable.lock);
 }
@@ -466,6 +476,10 @@ sleep(void *chan, struct spinlock *lk)
   }
   // Go to sleep.
   p->chan = chan;
+  /* Reduce the total number of tickets of RUNNABLE process - Added by Tung */
+  if (p->state == RUNNABLE) {
+    ptable.total_tickets -= p->tickets;
+  }
   p->state = SLEEPING;
 
   sched();
@@ -489,8 +503,10 @@ wakeup1(void *chan)
   struct proc *p;
 
   for(p = ptable.proc; p < &ptable.proc[NPROC]; p++)
-    if(p->state == SLEEPING && p->chan == chan)
+    if(p->state == SLEEPING && p->chan == chan) {
       p->state = RUNNABLE;
+      ptable.total_tickets += p->tickets;
+    }
 }
 
 // Wake up all processes sleeping on chan.
@@ -515,8 +531,10 @@ kill(int pid)
     if(p->pid == pid){
       p->killed = 1;
       // Wake process from sleep if necessary.
-      if(p->state == SLEEPING)
+      if(p->state == SLEEPING) {
         p->state = RUNNABLE;
+        ptable.total_tickets += p->tickets;
+      }
       release(&ptable.lock);
       return 0;
     }
@@ -576,11 +594,13 @@ int settickets(int number) {
   }
   struct proc *cur_proc = myproc();
   uint old_tickets = cur_proc->tickets;
-  cur_proc->tickets = number;
 
   acquire(&ptable.lock);
-  ptable.total_tickets -= old_tickets;
-  ptable.total_tickets += number;
+  cur_proc->tickets = number;
+  if (cur_proc->state == RUNNABLE) {
+    ptable.total_tickets -= old_tickets;
+    ptable.total_tickets += number;
+  }
   release(&ptable.lock);
   return 0;
 }
