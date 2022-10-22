@@ -42,10 +42,6 @@ fetchstr(uint addr, char **pp)
   if(addr >= curproc->sz) 
     return -1;
 
-  // if (addr < PGSIZE && curproc != initproc) {
-  //   return -1;
-  // }
-
   *pp = (char*)addr;
   ep = (char*)curproc->sz;
   for(s = *pp; s < ep; s++){
@@ -76,9 +72,6 @@ argptr(int n, char **pp, int size)
   if(size < 0 || (uint)i >= curproc->sz || (uint)i+size > curproc->sz)
     return -1;
 
-  // if ((uint)i < PGSIZE && curproc != initproc) {
-  //   return -1;
-  // }
   *pp = (char*)i;
   return 0;
 }
