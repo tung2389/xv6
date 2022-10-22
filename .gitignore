@@ -19,3 +19,4 @@ Makefile.test
 tests-out/
 tests/
 *.zip
+.vscode/
