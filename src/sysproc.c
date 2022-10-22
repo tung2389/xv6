@@ -124,3 +124,11 @@ sys_getpinfo(void) {
   }
   return getpinfo(ps);
 }
+
+int sys_mprotect(void){
+  return 0;
+}
+
+int sys_munprotect(void){
+  return 0;
+}

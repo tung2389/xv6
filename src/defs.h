@@ -123,6 +123,8 @@ void            wakeup(void*);
 void            yield(void);
 int             settickets(int);
 int             getpinfo(struct pstat *);
+int             mprotect(void*, int);
+int             unmprotect(void*, int);
 
 // swtch.S
 void            swtch(struct context**, struct context*);
