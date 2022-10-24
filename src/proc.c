@@ -636,10 +636,39 @@ int getpinfo(struct pstat *ps) {
   return 0;
 }
 
-int mprotect(void* addr, int len){
+// start of code added by Brian, Tung, and Khoi, hw5
+// this function changes the protection bits of the page range from starting at addr and of len pages to be read only
+int mprotect(void *addr, int len) {
+  struct proc *curproc = myproc();
+
+  // validate len: len has to be > 0 and within the address space
+  if (len<=0 || (int)addr+len*PGSIZE>curproc->sz){
+    return -1;
+  }
+
+  // validate page alignment
+  if((int)(((int) addr) % PGSIZE )  != 0){
+    cprintf("\nwrong addr %p\n", addr);
+    return -1;
+  }
+
+  pte_t *pte;
+  for (int i = (int) addr; i < ((int) addr + (len) *PGSIZE); i+= PGSIZE){
+    // get the address of the PTE in the current process's page table that corresponds to virtual address i-th
+    pte = walkpgdir(curproc->pgdir,(void*) i, 0);
+    if(pte && ((*pte & PTE_U) != 0) && ((*pte & PTE_P) != 0) ){
+      *pte = (*pte) & (~PTE_W) ; // clearing the write bit 
+      cprintf("\nPTE : 0x%p\n", pte);
+    } else {
+      return -1;
+    }
+  }
+
+  lcr3(V2P(curproc->pgdir));
   return 0;
 }
 
-int munprotect(void* addr, int len){
+int munprotect(void *addr, int len) {
   return 0;
 }
+// end of code added by Brian, Tung, and Khoi, hw5
