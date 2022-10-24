@@ -125,10 +125,16 @@ sys_getpinfo(void) {
   return getpinfo(ps);
 }
 
+// Start of code added by Brian, Tung, and Khoi, hw5
 int sys_mprotect(void){
-  return 0;
+  int addr, len;
+  if (argint(0,&addr)<0 || argint(0, &len)<0){
+    return -1;
+  }
+  return mprotect((void*)addr, len);
 }
 
 int sys_munprotect(void){
   return 0;
 }
+// End of code added by Brian, Tung, and Khoi, hw5
