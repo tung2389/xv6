@@ -184,6 +184,7 @@ UPROGS=\
 	_zombie\
 	_track_lottery\
 	_nullptr_dereference\
+	_test_mem\
 
 fs.img: mkfs README $(UPROGS)
 	./mkfs fs.img README $(UPROGS)
@@ -253,7 +254,7 @@ qemu-nox-gdb: fs.img xv6.img .gdbinit
 EXTRA=\
 	mkfs.c ulib.c user.h cat.c echo.c forktest.c grep.c kill.c\
 	ln.c ls.c mkdir.c rm.c stressfs.c usertests.c wc.c zombie.c\
-	printf.c umalloc.c track_lottery.c nullptr_dereference.c\
+	printf.c umalloc.c track_lottery.c test_mem.c nullptr_dereference.c\
 	README dot-bochsrc *.pl toc.* runoff runoff1 runoff.list\
 	.gdbinit.tmpl gdbutil\
 

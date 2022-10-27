@@ -128,7 +128,7 @@ sys_getpinfo(void) {
 // Start of code added by Brian, Tung, and Khoi, hw5
 int sys_mprotect(void){
   int addr, len;
-  if (argint(0,&addr)<0 || argint(0, &len)<0){
+  if (argint(0,&addr)<0 || argint(1, &len)<0){
     return -1;
   }
   return mprotect((void*)addr, len);
@@ -136,7 +136,7 @@ int sys_mprotect(void){
 
 int sys_munprotect(void){
   int addr, len;
-  if (argint(0,&addr)<0 || argint(0, &len)<0){
+  if (argint(0,&addr)<0 || argint(1, &len)<0){
     return -1;
   }
   return munprotect((void*)addr, len);
