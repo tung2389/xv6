@@ -184,7 +184,7 @@ UPROGS=\
 	_zombie\
 	_track_lottery\
 	_nullptr_dereference\
-	_test_mem\
+	_protectTest\
 
 fs.img: mkfs README $(UPROGS)
 	./mkfs fs.img README $(UPROGS)
