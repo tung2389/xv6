@@ -635,11 +635,3 @@ int getpinfo(struct pstat *ps) {
   release(&ptable.lock);
   return 0;
 }
-
-int mprotect(void* addr, int len){
-  return 0;
-}
-
-int munprotect(void* addr, int len){
-  return 0;
-}
