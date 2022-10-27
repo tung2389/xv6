@@ -393,12 +393,12 @@ int mprotect(void *addr, int len) {
   struct proc *curproc = myproc();
 
   // validate len: len has to be > 0 and within the address space
-  if (len<=0 || (int)addr+len*PGSIZE>curproc->sz){
+  if (len<=0 || (int)addr+len*PGSIZE>=curproc->sz || (int)addr<PGSIZE){
     return -1;
   }
 
   // validate page alignment
-  if((int)(((int) addr) % PGSIZE )  != 0){
+  if((int)(((int) addr) % PGSIZE ) != 0){
     cprintf("\nwrong addr %p\n", addr);
     return -1;
   }
@@ -406,12 +406,10 @@ int mprotect(void *addr, int len) {
   pte_t *pte;
   for (int i = (int) addr; i < ((int) addr + (len) *PGSIZE); i+= PGSIZE){
     // get the address of the PTE in the current process's page table that corresponds to virtual address i-th
-    pte = walkpgdir(curproc->pgdir,(void*) i, 0);
-    if(pte && ((*pte & PTE_U) != 0) && ((*pte & PTE_P) != 0) ){
-      *pte = (*pte) & (~PTE_W) ; // clearing the write bit 
-      cprintf("\nPTE : 0x%p\n", pte);
-    } else {
-      return -1;
+    pte = walkpgdir(curproc->pgdir, (void*) i, 0);
+    // Check if the page present or not
+    if ((*pte & PTE_P) != 0){
+      *pte = (*pte) & (~PTE_W); // clearing the write bit 
     }
   }
 
@@ -419,11 +417,12 @@ int mprotect(void *addr, int len) {
   return 0;
 }
 
+// this function changes the protection bits of the page range from starting at addr and of len pages to be read and write
 int munprotect(void *addr, int len) {
   struct proc *curproc = myproc();
 
   // validate len: len has to be > 0 and within the address space
-  if (len<=0 || (int)addr+len*PGSIZE>curproc->sz){
+  if (len<=0 || (int)addr+len*PGSIZE>=curproc->sz || (int)addr<PGSIZE){
     return -1;
   }
 
@@ -437,11 +436,9 @@ int munprotect(void *addr, int len) {
   for (int i = (int) addr; i < ((int) addr + (len) *PGSIZE); i+= PGSIZE){
     // get the address of the PTE in the current process's page table that corresponds to virtual address i-th
     pte = walkpgdir(curproc->pgdir,(void*) i, 0);
-    if(pte && ((*pte & PTE_U) != 0) && ((*pte & PTE_P) != 0) ){
+    // Check if the page present or not
+    if ((*pte & PTE_P) != 0){
       *pte = (*pte) | (PTE_W) ; // Setting up the write bit 
-      cprintf("\nPTE : 0x%p\n", pte);
-    } else {
-      return -1;
     }
   }
 

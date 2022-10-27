@@ -131,12 +131,18 @@ int sys_mprotect(void){
   if (argint(0,&addr)<0 || argint(1, &len)<0){
     return -1;
   }
+  if (addr < 0 || len <= 0) {
+    return -1;
+  }
   return mprotect((void*)addr, len);
 }
 
 int sys_munprotect(void){
   int addr, len;
   if (argint(0,&addr)<0 || argint(1, &len)<0){
+    return -1;
+  }
+  if (addr < 0 || len <= 0) {
     return -1;
   }
   return munprotect((void*)addr, len);
