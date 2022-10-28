@@ -1,0 +1,1 @@
+pid 3 test_1: trap 14 err 6 on cpu 0 eip 0x1004 addr 0x0--kill proc

@@ -1,0 +1,1 @@
+pid 3 test_2: trap 14 err 7 on cpu 0 eip 0x1054 addr 0x1000--kill proc
