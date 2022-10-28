@@ -393,7 +393,7 @@ int mprotect(void *addr, int len) {
   struct proc *curproc = myproc();
 
   // validate len: len has to be > 0 and within the address space
-  if (len<=0 || (int)addr+len*PGSIZE>=curproc->sz || (int)addr<PGSIZE){
+  if (len <= 0 || (int) addr + len * PGSIZE >= curproc->sz || (int) addr < PGSIZE){
     return -1;
   }
 
