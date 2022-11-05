@@ -635,3 +635,71 @@ int getpinfo(struct pstat *ps) {
   release(&ptable.lock);
   return 0;
 }
+
+// Start of code added by Tung, Khoi and Brian 
+void push_to_stack(uint **sp, void *arg) {
+  uint *copy_sp = (*sp);
+  copy_sp -= 1;
+  (*copy_sp) = (uint) arg;
+  *sp = copy_sp;
+}
+
+int clone(void (*fnc)(void *, void *), void *arg1, void *arg2, void *stack) {
+  int i, pid;
+  struct proc *np;
+  struct proc *curproc = myproc();
+
+  // Allocate process.
+  if((np = allocproc()) == 0){
+    return -1;
+  }
+
+  // Copy process state from proc.
+  if((np->pgdir = copyuvm(curproc->pgdir, curproc->sz)) == 0){
+    kfree(np->kstack);
+    np->kstack = 0;
+    np->state = UNUSED;
+    return -1;
+  }
+
+  np->sz = curproc->sz;
+  np->parent = curproc;
+  *(np->tf) = *(curproc->tf);
+  // Child process inherits number of tickets from parent - add by Tung
+  np->tickets = curproc->tickets;
+
+  // Step 1: Child thread should have the same page table 
+  np->pgdir = curproc->pgdir;
+
+  // Step 2: New thread starts executing at the address specificed by fcn
+  np->tf->eip = fnc;
+
+  // Step 3: Passed arg1, arg2 and fake return PC to user stack
+  np->tstack = stack;
+
+  // Update stack pointer of thread stack
+  np->tf->esp = np->tstack + PGSIZE;
+  push_to_stack(&np->tf->esp, 0xffffffff);
+  push_to_stack(&np->tf->esp, arg2);
+  push_to_stack(&np->tf->esp, arg1);
+  
+  // Clear %eax so that clone returns 0 in the child.
+  np->tf->eax = 0;
+
+  // Copy files descriptor from parent
+  for(i = 0; i < NOFILE; i++)
+    if(curproc->ofile[i])
+      np->ofile[i] = filedup(curproc->ofile[i]);
+  np->cwd = idup(curproc->cwd);
+
+  safestrcpy(np->name, curproc->name, sizeof(curproc->name));
+
+  pid = np->pid;
+
+  acquire(&ptable.lock);
+  np->state = RUNNABLE;
+  ptable.total_tickets += np->tickets;
+  release(&ptable.lock);
+
+  return pid;
+}
