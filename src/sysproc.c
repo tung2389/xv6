@@ -125,7 +125,6 @@ sys_getpinfo(void) {
   return getpinfo(ps);
 }
 
-// Start of code added by Brian, Tung, and Khoi, hw5
 int sys_mprotect(void){
   int addr, len;
   if (argint(0,&addr)<0 || argint(1, &len)<0){
@@ -147,4 +146,11 @@ int sys_munprotect(void){
   }
   return munprotect((void*)addr, len);
 }
-// End of code added by Brian, Tung, and Khoi, hw5
+
+int sys_join(void){
+  void *stack;
+  if (argptr(0, (char **) &stack, sizeof(void *)) < 0){
+    return -1;
+  }
+  return join((void**)stack);
+}

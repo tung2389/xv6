@@ -3,16 +3,28 @@
 #include "stat.h"
 #include "user.h"
 
+int
+main(int argc, char *argv[]) {
+    int *pg1 = (int *) 0x0500;
+    int rc = mprotect((void *) pg1, 2);
+    if (rc == -1){
+        printf(1, "XV6_TEST_OUTPUT point to invalid address space\n");
+        exit();
+    }
+    printf(1, "This line should not be printed \n");
+    exit();
+}
+
 // Test to write after unprotect
 // int
 // main(int argc, char *argv[]) {
-//     int ret = mprotect((void*)4096, 3);
+//     int ret = mprotect((void*)4096, 2);
 //     printf(1, "Return value of mprotect : %d\n", ret);
 
 //     ret = munprotect((void*)4096, 1);
 //     printf(1, "Return value of munprotect : %d\n", ret);
 
-    // *(char**)0x1000 = "this should not cause a pagefault";
+//     *(char**)0x1000 = "this should not cause a pagefault";
 
 //     printf(1, "Written to 0x1000\n");
 //     exit();
@@ -69,15 +81,15 @@
 // }
 
 // Test 0 or negative length
-int
-main(int argc, char *argv[]) {
-    int *pg1 = (int *) 0x1001;
-    int rc = mprotect((void *) pg1, 0);
-    if (rc == -1){
-        printf(1, "invalid len\n");
-        exit();
-    }
-    printf(1, "This line should not be printed \n");
-    exit();
-}
+// int
+// main(int argc, char *argv[]) {
+//     int *pg1 = (int *) 0x1001;
+//     int rc = mprotect((void *) pg1, 0);
+//     if (rc == -1){
+//         printf(1, "invalid len\n");
+//         exit();
+//     }
+//     printf(1, "This line should not be printed \n");
+//     exit();
+// }
 // End of code added by Brian, Tung, and Khoi

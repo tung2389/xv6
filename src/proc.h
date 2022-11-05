@@ -52,6 +52,7 @@ struct proc {
   /* Code added by Tung */
   uint tickets;                // Number of tickets assigned to this process. 
   uint ticks;                  // Number of ticks this process has accumulated. 
+  char *tstack;                // Bottom of the thread stack 
 };
 
 // Process memory is laid out contiguously, low addresses first:

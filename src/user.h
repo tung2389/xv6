@@ -27,11 +27,12 @@ int uptime(void);
 int getreadcount(void);
 int settickets(int);
 int getpinfo(struct pstat *);
-
-// Start of code added by Brian, Tung, and Khoi, hw5
 int mprotect(void*, int);
 int munprotect(void*, int);
-// End of code added by Brian, Tung, and Khoi, hw5
+
+// Start of code added by Brian, Tung, and Khoi, hw6
+int join (void **stack);
+// End of code added by Brian, Tung, and Khoi, hw6
 
 // ulib.c
 int stat(const char*, struct stat*);
