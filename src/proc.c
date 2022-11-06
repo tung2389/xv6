@@ -179,6 +179,17 @@ growproc(int n)
       return -1;
   }
   curproc->sz = sz;
+
+  // Update size of page table of all children threads
+  struct proc *p;
+  acquire(&ptable.lock);
+  for (p = ptable.proc; p < &ptable.proc[NPROC]; p++) {
+    if (p->parent == curproc && p->pgdir == curproc->pgdir) {
+      p->sz = curproc->sz;
+    }
+  }
+  release(&ptable.lock);
+
   switchuvm(curproc);
   return 0;
 }
@@ -294,10 +305,13 @@ wait(void)
   
   acquire(&ptable.lock);
   for(;;){
-    // Scan through table looking for exited children.
+    /*
+    Scan through table looking for exited children processes, but don't include children threads. 
+    Only a real process can free its own page table.
+    */
     havekids = 0;
     for(p = ptable.proc; p < &ptable.proc[NPROC]; p++){
-      if(p->parent != curproc)
+      if(p->parent != curproc || p->pgdir == curproc->pgdir)
         continue;
       havekids = 1;
       if(p->state == ZOMBIE){
@@ -654,14 +668,6 @@ int clone(void (*fnc)(void *, void *), void *arg1, void *arg2, void *stack) {
     return -1;
   }
 
-  // Copy process state from proc.
-  if((np->pgdir = copyuvm(curproc->pgdir, curproc->sz)) == 0){
-    kfree(np->kstack);
-    np->kstack = 0;
-    np->state = UNUSED;
-    return -1;
-  }
-
   np->sz = curproc->sz;
   np->parent = curproc;
   *(np->tf) = *(curproc->tf);
@@ -672,16 +678,18 @@ int clone(void (*fnc)(void *, void *), void *arg1, void *arg2, void *stack) {
   np->pgdir = curproc->pgdir;
 
   // Step 2: New thread starts executing at the address specificed by fcn
-  np->tf->eip = fnc;
+  np->tf->eip = (uint) fnc;
 
   // Step 3: Passed arg1, arg2 and fake return PC to user stack
-  np->tstack = stack;
+  np->tstack = (char *) stack;
 
   // Update stack pointer of thread stack
-  np->tf->esp = np->tstack + PGSIZE;
-  push_to_stack(&np->tf->esp, 0xffffffff);
-  push_to_stack(&np->tf->esp, arg2);
-  push_to_stack(&np->tf->esp, arg1);
+  uint *esp = (uint *) ((uint) np->tstack + PGSIZE);
+  push_to_stack(&esp, arg2);
+  push_to_stack(&esp, arg1);
+  push_to_stack(&esp, (void *) 0xffffffff);
+  np->tf->esp = (uint) esp;
+  np->tf->ebp = (uint) esp;
   
   // Clear %eax so that clone returns 0 in the child.
   np->tf->eax = 0;
