@@ -148,3 +148,17 @@ int sys_munprotect(void){
   return munprotect((void*)addr, len);
 }
 // End of code added by Brian, Tung, and Khoi, hw5
+
+// Start of code added by Tung, Khoi and Brian 
+int
+sys_clone(void) {
+  void *fcn, *arg1, *arg2, *stack;
+  if (argptr(0, (char **) &fcn, sizeof(void (*)(void *, void*))) < 0 ||
+      argptr(1, (char **) &arg1, sizeof(void *)) < 0 ||
+      argptr(2, (char **) &arg2, sizeof(void *)) < 0 ||
+      argptr(3, (char **) &stack, PGSIZE) < 0 
+  ) {
+    return -1;
+  }
+  return clone(fcn, arg1, arg2, stack);
+}

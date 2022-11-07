@@ -33,6 +33,8 @@ int mprotect(void*, int);
 int munprotect(void*, int);
 // End of code added by Brian, Tung, and Khoi, hw5
 
+int clone(void (*)(void *, void *), void *, void *, void *);
+
 // ulib.c
 int stat(const char*, struct stat*);
 char* strcpy(char*, const char*);
@@ -46,3 +48,4 @@ void* memset(void*, int, uint);
 void* malloc(uint);
 void free(void*);
 int atoi(const char*);
+int thread_create(void (*) (void *, void *), void *, void *); 

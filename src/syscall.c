@@ -115,6 +115,7 @@ extern int sys_mprotect(void);
 extern int sys_munprotect(void);
 // End of code added by Brian, Tung, and Khoi, hw5
 
+extern int sys_clone(void);
 static int (*syscalls[])(void) = {
 [SYS_fork]    sys_fork,
 [SYS_exit]    sys_exit,
@@ -143,8 +144,10 @@ static int (*syscalls[])(void) = {
 
 // Start of code added by Brian, Tung, and Khoi, hw5
 [SYS_mprotect] sys_mprotect,
-[SYS_munprotect] sys_munprotect
+[SYS_munprotect] sys_munprotect,
 // End of code added by Brian, Tung, and Khoi, hw5
+
+[SYS_clone] sys_clone
 };
 
 void
