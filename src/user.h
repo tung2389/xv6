@@ -29,9 +29,8 @@ int settickets(int);
 int getpinfo(struct pstat *);
 int mprotect(void*, int);
 int munprotect(void*, int);
-
 // Start of code added by Brian, Tung, and Khoi, hw6
-int join (void **stack);
+int join (void **);
 // End of code added by Brian, Tung, and Khoi, hw6
 
 // ulib.c
@@ -47,3 +46,4 @@ void* memset(void*, int, uint);
 void* malloc(uint);
 void free(void*);
 int atoi(const char*);
+int thread_join();

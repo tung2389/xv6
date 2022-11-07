@@ -111,7 +111,6 @@ extern int sys_settickets(void);
 extern int sys_getpinfo(void);
 extern int sys_mprotect(void);
 extern int sys_munprotect(void);
-
 // Start of code added by Brian, Tung, and Khoi, hw6
 extern int sys_join (void);
 // End of code added by Brian, Tung, and Khoi, hw6

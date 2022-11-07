@@ -104,3 +104,12 @@ memmove(void *vdst, const void *vsrc, int n)
     *dst++ = *src++;
   return vdst;
 }
+
+int 
+thread_join()
+{
+  void *stack;
+  int rc = join(&stack);
+  free(stack);
+  return rc;
+}

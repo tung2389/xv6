@@ -123,6 +123,9 @@ void            wakeup(void*);
 void            yield(void);
 int             settickets(int);
 int             getpinfo(struct pstat *);
+// Start of code added by Brian, Tung, and Khoi, hw6
+int             join (void **);
+// End of code added by Brian, Tung, and Khoi, hw6
 
 // swtch.S
 void            swtch(struct context**, struct context*);
@@ -191,10 +194,6 @@ int             copyout(pde_t*, uint, void*, uint);
 void            clearpteu(pde_t *pgdir, char *uva);
 int             mprotect(void*, int);
 int             munprotect(void*, int);
-
-// Start of code added by Brian, Tung, and Khoi, hw6
-int join (void **stack);
-// End of code added by Brian, Tung, and Khoi, hw6
 
 // number of elements in fixed-size array
 #define NELEM(x) (sizeof(x)/sizeof((x)[0]))
