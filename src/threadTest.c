@@ -16,4 +16,8 @@ int main(int argc, char *argv[]) {
     printf(1, "process's shared_global value: %d\n", shared_global);
     printf(1, "process's heap_var value: %d\n", *heap_var);
     thread_create(test_thread_create, &shared_global, heap_var);
+    thread_create(test_thread_create, &shared_global, heap_var);
+    thread_join();
+    thread_join();
+    exit();
 }
