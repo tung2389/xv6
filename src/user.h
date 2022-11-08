@@ -51,3 +51,6 @@ void free(void*);
 int atoi(const char*);
 int thread_create(void (*) (void *, void *), void *, void *); 
 int thread_join();
+void lock_init(lock_t *lock);
+void lock(lock_t *lock);
+void unlock(lock_t *lock);
