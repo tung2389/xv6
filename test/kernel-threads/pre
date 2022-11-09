@@ -1,0 +1,12 @@
+./tester/xv6-edit-makefile.sh src/Makefile thread_test_1,thread_test_2,thread_test_3,thread_test_4,thread_test_5> src/Makefile.test
+cp -f tests/thread_test_1.c src/thread_test_1.c
+cp -f tests/thread_test_2.c src/thread_test_2.c
+cp -f tests/thread_test_3.c src/thread_test_3.c
+cp -f tests/thread_test_4.c src/thread_test_4.c
+cp -f tests/thread_test_5.c src/thread_test_5.c
+cd src
+make -f Makefile.test clean
+make -f Makefile.test xv6.img
+make -f Makefile.test fs.img
+cd ..
+

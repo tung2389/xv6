@@ -142,11 +142,11 @@ void lock_init(lock_t *lock){
   lock->turn = 0;
 }
 
-void lock(lock_t *lock){
+void lock_acquire(lock_t *lock){
   int myTurn = FetchAndAdd(&(lock->ticket));
   while (lock->turn != myTurn){}
 }
 
-void unlock(lock_t *lock){
+void lock_release(lock_t *lock){
   lock->turn = lock->turn + 1;
 }
