@@ -118,3 +118,19 @@ int thread_create(void (*start_routine)(void *, void *), void *arg1, void *arg2)
   }
   return rc;
 }
+
+int 
+thread_join()
+{
+  void *stack = malloc(PGSIZE);
+  if (stack == 0){
+    return -1;
+  }
+  int rc = join(&stack);
+  if (rc < 0){
+    free(stack);
+    return -1;
+  }
+  free(stack);
+  return rc;
+}

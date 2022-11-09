@@ -34,6 +34,7 @@ int munprotect(void*, int);
 // End of code added by Brian, Tung, and Khoi, hw5
 
 int clone(void (*)(void *, void *), void *, void *, void *);
+int join(void **);
 
 // ulib.c
 int stat(const char*, struct stat*);
@@ -49,3 +50,4 @@ void* malloc(uint);
 void free(void*);
 int atoi(const char*);
 int thread_create(void (*) (void *, void *), void *, void *); 
+int thread_join();
