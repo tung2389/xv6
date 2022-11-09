@@ -1,0 +1,4 @@
+XV6_TEST_OUTPUT: process's shared_global value: 99
+XV6_TEST_OUTPUT: process's heap_var value: 9999
+XV6_TEST_OUTPUT: thread's shared_global value: 99
+XV6_TEST_OUTPUT: thread's heap_var value: 99

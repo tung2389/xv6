@@ -757,3 +757,4 @@ int join(void **stack){
     sleep(curproc, &ptable.lock);  //DOC: wait-sleep
   }
 }
+// End of code added by Tung, Khoi and Brian 

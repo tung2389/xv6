@@ -109,14 +109,13 @@ extern int sys_uptime(void);
 extern int sys_getreadcount(void);
 extern int sys_settickets(void);
 extern int sys_getpinfo(void);
-
-// Start of code added by Brian, Tung, and Khoi, hw5
 extern int sys_mprotect(void);
 extern int sys_munprotect(void);
-// End of code added by Brian, Tung, and Khoi, hw5
 
+// Start of code added by Brian, Tung, and Khoi, hw5
 extern int sys_clone(void);
 extern int sys_join(void);
+// End of code added by Brian, Tung, and Khoi, hw5
 static int (*syscalls[])(void) = {
 [SYS_fork]    sys_fork,
 [SYS_exit]    sys_exit,
@@ -142,14 +141,13 @@ static int (*syscalls[])(void) = {
 [SYS_getreadcount] sys_getreadcount,
 [SYS_settickets] sys_settickets,
 [SYS_getpinfo] sys_getpinfo,
-
-// Start of code added by Brian, Tung, and Khoi, hw5
 [SYS_mprotect] sys_mprotect,
 [SYS_munprotect] sys_munprotect,
-// End of code added by Brian, Tung, and Khoi, hw5
 
+// Start of code added by Brian, Tung, and Khoi, hw6
 [SYS_clone] sys_clone,
 [SYS_join] sys_join
+// End of code added by Brian, Tung, and Khoi, hw6
 };
 
 void

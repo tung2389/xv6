@@ -15,3 +15,7 @@
 ```
 ./test-vm.sh
 ```
+- To test kernel threads:
+```
+./test-kernel-threads.sh
+```
