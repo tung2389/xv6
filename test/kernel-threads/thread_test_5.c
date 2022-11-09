@@ -1,3 +1,4 @@
+// Start of code added by Tung, Khoi and Brian 
 // Test thread ID of clone and join
 #include "types.h"
 #include "stat.h"

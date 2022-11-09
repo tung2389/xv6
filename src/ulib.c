@@ -106,6 +106,7 @@ memmove(void *vdst, const void *vsrc, int n)
   return vdst;
 }
 
+// Start of code added by Tung, Khoi and Brian hw6
 int thread_create(void (*start_routine)(void *, void *), void *arg1, void *arg2) {
   void *stack = malloc(PGSIZE);
   if (stack == 0) {
@@ -150,3 +151,4 @@ void lock_acquire(lock_t *lock){
 void lock_release(lock_t *lock){
   lock->turn = lock->turn + 1;
 }
+// End of code added by Tung, Khoi and Brian hw6

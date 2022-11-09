@@ -149,7 +149,7 @@ int sys_munprotect(void){
 }
 // End of code added by Brian, Tung, and Khoi, hw5
 
-// Start of code added by Tung, Khoi and Brian 
+// Start of code added by Tung, Khoi and Brian hw6
 int
 sys_clone(void) {
   void *fcn, *arg1, *arg2, *stack;
@@ -170,3 +170,4 @@ int sys_join(void){
   }
   return join(&stack);
 }
+// End of code added by Tung, Khoi and Brian hw6
