@@ -132,19 +132,22 @@ int thread_join()
   return rc;
 }
 
-int FetchAndAdd(int *ptr){
-  int old = *ptr;
-  *ptr = old + 1;
-  return old;
+static inline int FetchAndAdd(int* variable, int value)
+{
+    __asm__ volatile("lock; xaddl %0, %1"
+      : "+r" (value), "+m" (*variable) // input + output
+      : // No input-only
+      : "memory"
+    );
+    return value;
 }
-
 void lock_init(lock_t *lock){
   lock->ticket = 0;
   lock->turn = 0;
 }
 
 void lock_acquire(lock_t *lock){
-  int myTurn = FetchAndAdd(&(lock->ticket));
+  int myTurn = FetchAndAdd(&(lock->ticket), 1);
   while (lock->turn != myTurn){}
 }
 
